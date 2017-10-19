@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
 
 #include "md5.h"
 #include "global.h"
@@ -21,6 +22,8 @@ private:
     std::string _name;
     std::string _passwordHash;
     
+    int _tries;
+    
 public:
     
     User(const std::string& data) {
@@ -28,6 +31,8 @@ public:
         const auto index = data.find(';');
         _name = data.substr(0, index);
         _passwordHash = data.substr(index + 1);
+        
+        _tries = 0;
     }
     
     User(const std::string& name, const std::string& password) {
@@ -43,6 +48,7 @@ public:
     
     void setPassword(const std::string& password)
     {
+        _tries = 0;
         _passwordHash = MD5(password).hexdigest();
     }
     
@@ -57,7 +63,15 @@ public:
     }
     
     bool checkPassword(const std::string& password) {
-        return MD5(password).hexdigest() == _passwordHash;
+        
+        bool success = MD5(password).hexdigest() == _passwordHash;
+        _tries = success ? 0 : _tries + 1;
+        
+        if (_tries >= 3) {
+            sleep(1);
+        }
+        
+        return success;
     }
     
     std::string getData() {

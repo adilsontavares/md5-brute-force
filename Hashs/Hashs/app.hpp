@@ -156,7 +156,7 @@ public:
         }
         
         std::cout << "Descobrindo senha para o hash " << user->getPasswordHash() << "..." << std::endl;
-        std::string result = md5_brute_force(user->getPasswordHash(), 4);
+        std::string result = md5_brute_force(user, 4);
         
         if (result.empty())
             std::cout << "Senha não encontrada." << std::endl;
@@ -177,7 +177,7 @@ public:
             std::cout << user->getName() << " -> " << std::flush;
             
             auto timer = Timer();
-            auto result = md5_brute_force(user->getPasswordHash(), 4);
+            auto result = md5_brute_force(user, 4);
             
             if (result.empty())
                 result = "[NÃO ENCONTRADA]";
